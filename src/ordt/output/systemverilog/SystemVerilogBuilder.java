@@ -48,8 +48,8 @@ public class SystemVerilogBuilder extends OutputBuilder {
 	protected static String logicClk = ExtParameters.systemverilogUseGatedLogicClk() ? "gclk" : defaultClk;	
 
 	// reset names
-	protected String defaultReset = "reset";  
-	protected boolean defaultResetActiveLow = false;
+	protected String defaultReset = ExtParameters.sysVerResetLowActive() ? "rst_n" : "reset"; // MYTOYS
+	protected boolean defaultResetActiveLow = ExtParameters.sysVerResetLowActive() ? true : false;// MYTOYS
 	protected String logicReset = null;
 	protected boolean logicResetActiveLow = false;
 	// indication that default resets are defined for this builder

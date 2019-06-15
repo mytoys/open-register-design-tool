@@ -144,6 +144,7 @@ ext_parm_defs
    | 'reuse_iwrap_structures' EQ bool
    | 'optimize_parallel_externals' EQ bool
    | 'use_async_resets' EQ bool
+   | 'reset_low_active' EQ bool
    | 'nack_partial_writes' EQ bool
    | 'write_enable_size' EQ NUM
    | 'max_internal_reg_reps' EQ NUM

@@ -227,9 +227,11 @@ public class SystemVerilogDecodeModule extends SystemVerilogModule {
 		this.addVectorReg("dec_pio_read_data_d1", 0, builder.getMaxRegWidth());  // max width read data register  
 		
 		// select full size read word
-		this.addCombinAssign("pio read data", pioInterfaceReadDataName + " = dec_pio_read_data_d1;"); 	   					
-		this.addResetAssign("pio read data", builder.getDefaultReset(), "dec_pio_read_data_d1 <= " + ExtParameters.sysVerSequentialAssignDelayString() + " " + builder.getMaxRegWidth() + "'b0;");  // reset for read data 
-		this.addRegAssign("pio read data",  "dec_pio_read_data_d1 <= " + ExtParameters.sysVerSequentialAssignDelayString() + "dec_pio_read_data_next;");  // capture return data	   
+		// MYTOYS: this.addCombinAssign("pio read data", pioInterfaceReadDataName + " = dec_pio_read_data_d1;");
+		// MYTOYS: this.addResetAssign("pio read data", builder.getDefaultReset(), "dec_pio_read_data_d1 <= " + ExtParameters.sysVerSequentialAssignDelayString() + " " + builder.getMaxRegWidth() + "'b0;");  // reset for read data 
+		// MYTOYS: this.addRegAssign("pio read data",  "dec_pio_read_data_d1 <= " + ExtParameters.sysVerSequentialAssignDelayString() + "dec_pio_read_data_next;");  // capture return data	   
+		// MYTOYS: use combinational output for read_data
+		this.addCombinAssign("pio read data", pioInterfaceReadDataName + " = dec_pio_read_data_next;");
 
 		// ------------- add ack/nack output regs
 		this.addScalarReg(pioInterfaceAckName);  // return ack

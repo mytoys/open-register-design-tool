@@ -17,7 +17,14 @@ Ordt documentation can be found [here](https://github.com/Juniper/open-register-
 
 # 2019-06-15 Notes
 
+## rebuild Ordt.jar 
+
 ```shell
-./gradlew build 
+./gradlew shadowJar
 
 ```
+
+output is `./build/libs/Ordt-190606.01.jar`
+
+
+## 

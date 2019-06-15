@@ -142,6 +142,7 @@ public class ExtParameters extends ExtParmsBaseListener  {
 		initBooleanParameter("reuse_iwrap_structures", false); 
 		initBooleanParameter("optimize_parallel_externals", false); 
 		initBooleanParameter("use_async_resets", false); 
+		initBooleanParameter("reset_low_active", false); // MYTOYS
 		initBooleanParameter("nack_partial_writes", false); 
 		initIntegerParameter("write_enable_size", 0); 	
 		initIntegerParameter("max_internal_reg_reps", defaultMaxInternalRegReps); 	
@@ -774,6 +775,11 @@ public class ExtParameters extends ExtParmsBaseListener  {
 		return getBooleanParameter("use_async_resets");
 	}
 	
+	// MYTOYS : add reset_low_active
+	public static Boolean sysVerResetLowActive() {
+		return getBooleanParameter("reset_low_active");
+	}
+
 	public static Boolean sysVerNackPartialWrites() {
 		return getBooleanParameter("nack_partial_writes");
 	}

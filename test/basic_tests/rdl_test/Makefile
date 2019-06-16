@@ -6,7 +6,7 @@ all: clean
 	@java -jar $(ORDT_JAR) \
     -parms $(BLOCK).parms \
     -verilog $(BLOCK)_pio.v \
-    -vbench $(BLOCK)_tb.v \
+    -vbench $(BLOCK)_test.v \
     -xml $(BLOCK)_pio.xml \
     -reglist $(BLOCK).reglist \
     $(BLOCK).rdl

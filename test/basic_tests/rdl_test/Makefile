@@ -1,10 +1,15 @@
 BLOCK    = abc
 ORDT_JAR = ../../../build/libs/Ordt-190606.01.jar
 
-OUTFILES = $(BLOCK)_reg.v
 
 all: clean
-	@java -jar $(ORDT_JAR) -parms $(BLOCK).parms -verilog $(BLOCK)_reg.v $(BLOCK).rdl
+	@java -jar $(ORDT_JAR) \
+    -parms $(BLOCK).parms \
+    -verilog $(BLOCK)_pio.v \
+    -vbench $(BLOCK)_tb.v \
+    -xml $(BLOCK)_pio.xml \
+    -reglist $(BLOCK).reglist \
+    $(BLOCK).rdl
 
 clean:
-	@rm -rf $(OUTFILES)
+	@rm -rf *.v *.xml *.reglist

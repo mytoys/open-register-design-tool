@@ -27,4 +27,18 @@ Ordt documentation can be found [here](https://github.com/Juniper/open-register-
 output is `./build/libs/Ordt-190606.01.jar`
 
 
-## 
+##  output/systemverilog
+
+1. `addressmap` is the boundry of RTL module;
+2. `regfile` is the boundry of group of registers to add register address gap;
+3. `reg` is the  exact register
+4. `field` is the minimum register-unit
+5. output verilog module includes 3 modules:
+    - top(xxxx_pio), 
+    - read/write logic(xxxx_logic) 
+    - addrss decode(xxxx_decode).
+6. `sw` control interface can be `LEAF`, `PARALLEL` ... 
+7. `sw=rw` means software can read and write the register field
+8. `hw=r` means hardware can read and write the register field
+
+

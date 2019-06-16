@@ -5,7 +5,7 @@ input rdl {
 
 // systemverilog output parameters
 output systemverilog {
-	leaf_address_size = 40             // leaf address bits
+	leaf_address_size = 32             // leaf address bits
 	base_addr_is_parameter = false     // base address parameter will be added to top module
 	use_gated_logic_clock = false       // use separate gated clock for registers
 	always_generate_iwrap = false     // create int wrapper mod even if none specified in rdl

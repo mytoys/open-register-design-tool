@@ -4,28 +4,50 @@
 // name, description params
 // external regfile
 
-field swcfg_field {
-     hw   = r; sw = rw;
-     desc = "SW Configuration field";
+field f_RW { hw = r; sw = rw; desc = "TBD"; };
+field f_RO { hw = w; sw = r ; desc = "TBD"; };
+
+
+// regfile is the boundry of register address
+// a regfile has a configured base_address
+// and inside regfile, reg address is continuous
+//
+regfile regs_ABC  {
+	reg {
+		f_RW field_31[31:31] = 1'd1;
+        field_31->desc = "field description text for field_31";
+
+		f_RW field_26[26:16] = 11'd16;
+        field_26->desc = "field description text for field_26";
+
+		f_RW field_10_0[10:0] = 11'd128;
+        field_10_0->desc = "field description text for field_10_0";
+
+	} CTRL;
+    CTRL->desc = "register description text for CTRL";
+
+	reg {
+		f_RW Xenable[0:0] = 1'd0;
+        Xenable->desc = "enable";
+	} ENABLE;
+    ENABLE->desc = "register description text for ENABLE";
 };
 
-regfile regs_CACC {
-	reg {
-        category = "STATE";
-		swcfg_field xx_enable[31:31] = 1'd1;
-		swcfg_field set_back[26:16] = 11'd16;
-		swcfg_field size[10:0] = 11'd128;
-	} reorder_window;
-	reg {
-        category = "STATE";
-		swcfg_field bypass[0:0] = 1'd0;
-		swcfg_field thrd[6:4] = 3'd2;
-		swcfg_field gain[15:8] = 8'd64;
-	} agc_gain;
-};
+// addrmap is the boundry of RTL
+// output verilog will be
+//  abc_pio
+//    +abc_logic
+//    +abc_decode
 
 addrmap  {
-	regs_CACC CACC @0x1000;
-} test;    
+	regs_ABC  ABC  @0x1000;
+
+	reg {
+		f_RW status[15:0] = 1'd0;
+	} STATUS;
+
+	regs_ABC  ABC_2  @0x2000;
+
+} abc;    
 
 

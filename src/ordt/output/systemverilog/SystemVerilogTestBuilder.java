@@ -35,6 +35,9 @@ public class SystemVerilogTestBuilder extends SystemVerilogBuilder {
 	protected SystemVerilogModule primaryBfm = new SystemVerilogModule(this, PIO, defaultClk, getDefaultReset(), ExtParameters.sysVerUseAsyncResets());  // primary pio interface bfm
 	protected SystemVerilogModule benchtop = new SystemVerilogModule(this, 0, defaultClk, getDefaultReset(), ExtParameters.sysVerUseAsyncResets());  // bench top module
 
+	protected String defaultReset = ExtParameters.sysVerResetLowActive() ? "rst_n" : "reset"; // MYTOYS
+	protected boolean defaultResetActiveLow = ExtParameters.sysVerResetLowActive() ? true : false;// MYTOYS
+
 	public SystemVerilogTestBuilder(RegModelIntf model) {
 		super(model);
 	}
@@ -402,16 +405,34 @@ public class SystemVerilogTestBuilder extends SystemVerilogBuilder {
 	   	benchtop.addStatement("end");
 	   	benchtop.addStatement("");
 		
+		// MYTOYS: dump fsdb
+		benchtop.addStatement("initial");
+	    benchtop.addStatement("  begin");
+	   	benchtop.addStatement("  $fsdbDumpfile(\"tb.fsdb\");");
+	   	benchtop.addStatement("  $fsdbDumpvars(0," + getModuleName() + "_test);");
+	   	benchtop.addStatement("end");
+	   	benchtop.addStatement("");
+
 		// set up clock and reset
 		benchtop.addStatement("initial");
 	    benchtop.addStatement("  begin");
 	   	benchtop.addStatement("  CLK = 1'b0; // at time 0");
 	   	benchtop.addStatement("  CLK_div2 = 1'b0;");
 	   	benchtop.addStatement("  CLK_div4 = 1'b0;");
+
+        // MYTOYS: reset_low_active
+        if(defaultResetActiveLow) {
+	   	benchtop.addStatement("  " + defaultReset + "= 0; // toggle reset");
+	   	benchtop.addStatement("  #" + (clkHalfPeriod * 3) + " " + defaultReset + "= 1'b0;");
+	   	benchtop.addStatement("  $display(\" %0d: Applying reset...\", $time);");
+	   	benchtop.addStatement("  #" + (clkHalfPeriod * 3) + " " + defaultReset + "= 1'b1;");
+        } else {
 	   	benchtop.addStatement("  reset = 0; // toggle reset");
 	   	benchtop.addStatement("  #" + (clkHalfPeriod * 3) + " reset = 1'b1;");
 	   	benchtop.addStatement("  $display(\" %0d: Applying reset...\", $time);");
 	   	benchtop.addStatement("  #" + (clkPeriod * 3) + " reset = 1'b0;");
+        }
+
 	   	benchtop.addStatement("  $display(\" %0d: Releasing reset...\", $time);");
 	   	benchtop.addStatement("end");
 	   	benchtop.addStatement("");

@@ -183,8 +183,8 @@ public class SystemVerilogDecodeModule extends SystemVerilogModule {
 		// add internal registered input sigs
 		this.addScalarReg("pio_write_active");  // write indication
 		this.addScalarReg("pio_read_active");  // read indication
-		if (mapHasMultipleAddresses()) this.addVectorReg("pio_dec_address_d1", builder.getAddressLowBit(), builder.getMapAddressWidth());  // address
-		this.addVectorReg("pio_dec_write_data_d1", 0, builder.getMaxRegWidth());  // input write data capture register 
+		// MYTOYS: if (mapHasMultipleAddresses()) this.addVectorReg("pio_dec_address_d1", builder.getAddressLowBit(), builder.getMapAddressWidth());  // address
+		// MYTOYS: this.addVectorReg("pio_dec_write_data_d1", 0, builder.getMaxRegWidth());  // input write data capture register 
 		
         // pio read/write actives - enabled by ext re/we and disabled when ack/nack
 		this.addResetAssign(rstGrpName, builder.getDefaultReset(), "pio_write_active <= " + ExtParameters.sysVerSequentialAssignDelayString() + " 1'b0;");
@@ -192,14 +192,14 @@ public class SystemVerilogDecodeModule extends SystemVerilogModule {
 		this.addRegAssign(rstGrpName,  "pio_write_active <= " + ExtParameters.sysVerSequentialAssignDelayString() + " pio_write_active ? pio_no_acks : pio_activate_write;"); // active stays high until ack/nack 		   
 		this.addRegAssign(rstGrpName,  "pio_read_active <= " + ExtParameters.sysVerSequentialAssignDelayString() + " pio_read_active ? pio_no_acks : pio_activate_read;");  		   
 
-		if (mapHasMultipleAddresses()) {
-			if (ExtParameters.sysVerResetAllOutputs())
-				this.addResetAssign(rstGrpName, builder.getDefaultReset(), "pio_dec_address_d1 <= " + ExtParameters.sysVerSequentialAssignDelayString() + " " + builder.getMapAddressWidth() + "'b0;" );   
-			this.addRegAssign(optGrpName,  "pio_dec_address_d1 <= " + ExtParameters.sysVerSequentialAssignDelayString() + "  " + pioInterfaceAddressName + ";");  // capture address if new transaction		   
-		}
-		if (ExtParameters.sysVerResetAllOutputs())
-			this.addResetAssign(rstGrpName, builder.getDefaultReset(), "pio_dec_write_data_d1 <= " + ExtParameters.sysVerSequentialAssignDelayString() + " " + builder.getMaxRegWidth() + "'b0;" );   
-		this.addRegAssign(optGrpName,  "pio_dec_write_data_d1 <= " + ExtParameters.sysVerSequentialAssignDelayString() + " " + pioInterfaceWriteDataName + ";"); // capture write data if new transaction
+		// MYTOYS: if (mapHasMultipleAddresses()) {
+		// MYTOYS: 	if (ExtParameters.sysVerResetAllOutputs())
+		// MYTOYS: 		this.addResetAssign(rstGrpName, builder.getDefaultReset(), "pio_dec_address_d1 <= " + ExtParameters.sysVerSequentialAssignDelayString() + " " + builder.getMapAddressWidth() + "'b0;" );   
+		// MYTOYS: 	this.addRegAssign(optGrpName,  "pio_dec_address_d1 <= " + ExtParameters.sysVerSequentialAssignDelayString() + "  " + pioInterfaceAddressName + ";");  // capture address if new transaction		   
+		// MYTOYS: }
+		// MYTOYS: if (ExtParameters.sysVerResetAllOutputs())
+		// MYTOYS: 	this.addResetAssign(rstGrpName, builder.getDefaultReset(), "pio_dec_write_data_d1 <= " + ExtParameters.sysVerSequentialAssignDelayString() + " " + builder.getMaxRegWidth() + "'b0;" );   
+		// MYTOYS: this.addRegAssign(optGrpName,  "pio_dec_write_data_d1 <= " + ExtParameters.sysVerSequentialAssignDelayString() + " " + pioInterfaceWriteDataName + ";"); // capture write data if new transaction
 		
 		// if write enables are specified, then capture
 		if (hasWriteEnables()) {
@@ -224,7 +224,7 @@ public class SystemVerilogDecodeModule extends SystemVerilogModule {
 
 		// ------------ add read data output regs
 		this.addVectorReg(pioInterfaceReadDataName, 0, builder.getMaxRegWidth());  //  read data output  
-		this.addVectorReg("dec_pio_read_data_d1", 0, builder.getMaxRegWidth());  // max width read data register  
+		// MYTOYS: this.addVectorReg("dec_pio_read_data_d1", 0, builder.getMaxRegWidth());  // max width read data register  
 		
 		// select full size read word
 		// MYTOYS: this.addCombinAssign("pio read data", pioInterfaceReadDataName + " = dec_pio_read_data_d1;");
@@ -289,7 +289,8 @@ public class SystemVerilogDecodeModule extends SystemVerilogModule {
 		this.addScalarReg("external_transaction_active");
 		
 		// if addr monitoring is enabled, then add these IO
-		if (mapHasMultipleAddresses() && ExtParameters.sysVerIncludeAddrMonitor())  generateAddrMonitor(topRegProperties, "pio_dec_address_d1", 
+		// MYTOYS: if (mapHasMultipleAddresses() && ExtParameters.sysVerIncludeAddrMonitor())  generateAddrMonitor(topRegProperties, "pio_dec_address_d1", 
+		if (mapHasMultipleAddresses() && ExtParameters.sysVerIncludeAddrMonitor())  generateAddrMonitor(topRegProperties, "pio_dec_address", 
 					"pio_activate_write", "pio_activate_read", pioInterfaceAckNextName, pioInterfaceNackNextName);
 	}
 
@@ -4049,18 +4050,22 @@ public class SystemVerilogDecodeModule extends SystemVerilogModule {
 			if (elem.isExternal()) {
 				if (elem.definesExtControls()) {
 					// generate reg write data assignment
-					writeStmt(indentLevel, elem.getFullSignalName(DefSignalType.D2H_DATA) + "_next = pio_dec_write_data_d1" + SystemVerilogSignal.genRefArrayString(0, elem.getMaxRegWidth()) + ";"); // regardless of transaction size assign based on regsize
-					if (hasWriteEnables()) writeStmt(indentLevel, elem.getFullSignalName(DefSignalType.D2H_ENABLE) + "_next = pio_dec_write_enable_d1" + SystemVerilogSignal.genRefArrayString(0, elem.getWriteEnableWidth()) + ";");
+					// MYTOYS: writeStmt(indentLevel, elem.getFullSignalName(DefSignalType.D2H_DATA) + "_next = pio_dec_write_data_d1" + SystemVerilogSignal.genRefArrayString(0, elem.getMaxRegWidth()) + ";"); // regardless of transaction size assign based on regsize
+					// MYTOYS: if (hasWriteEnables()) writeStmt(indentLevel, elem.getFullSignalName(DefSignalType.D2H_ENABLE) + "_next = pio_dec_write_enable_d1" + SystemVerilogSignal.genRefArrayString(0, elem.getWriteEnableWidth()) + ";");
+					writeStmt(indentLevel, elem.getFullSignalName(DefSignalType.D2H_DATA) + "_next = pio_dec_write_data" + SystemVerilogSignal.genRefArrayString(0, elem.getMaxRegWidth()) + ";"); // regardless of transaction size assign based on regsize
+					if (hasWriteEnables()) writeStmt(indentLevel, elem.getFullSignalName(DefSignalType.D2H_ENABLE) + "_next = pio_dec_write_enable" + SystemVerilogSignal.genRefArrayString(0, elem.getWriteEnableWidth()) + ";");
 					writeStmt(indentLevel, elem.getFullSignalName(DefSignalType.D2H_WE) + "_next = 1'b0;");  // we defaults to 0
 					writeStmt(indentLevel, elem.getFullSignalName(DefSignalType.D2H_RE) + "_next = 1'b0;");  // we defaults to 0
 					// if an address is required then add it 
 					if (elem.hasExtAddress()) {
 						String addressDefault = "";
 						if (elem.hasExternalRepLevel()) 
-							if (elem.getExtInstAddressWidth() > 0) addressDefault = "{" + elem.getExternalType().getRepLevelAddrWidth() + "'d0, pio_dec_address_d1 " + SystemVerilogSignal.genRefArrayString(elem.getExtLowBit(), elem.getExtInstAddressWidth()) + "}"; // zero ancestor bits w/ instance address
+							// MYTOYS: if (elem.getExtInstAddressWidth() > 0) addressDefault = "{" + elem.getExternalType().getRepLevelAddrWidth() + "'d0, pio_dec_address_d1 " + SystemVerilogSignal.genRefArrayString(elem.getExtLowBit(), elem.getExtInstAddressWidth()) + "}"; // zero ancestor bits w/ instance address
+							if (elem.getExtInstAddressWidth() > 0) addressDefault = "{" + elem.getExternalType().getRepLevelAddrWidth() + "'d0, pio_dec_address" + SystemVerilogSignal.genRefArrayString(elem.getExtLowBit(), elem.getExtInstAddressWidth()) + "}"; // zero ancestor bits w/ instance address
 							else addressDefault = elem.getExternalType().getRepLevelAddrWidth() + "'d0"; // zero ancestor bits w/ no instance address
 						else
-							addressDefault = "pio_dec_address_d1 " + elem.getExtAddressArrayString(); 
+							// MYTOYS: addressDefault = "pio_dec_address_d1 " + elem.getExtAddressArrayString();
+							addressDefault = "pio_dec_address" + elem.getExtAddressArrayString();
 						writeStmt(indentLevel, elem.getFullSignalName(DefSignalType.D2H_ADDR) + "_next = " + addressDefault + ";");  // address is resistered value from pio
 					}
 					// if data sizes are needed then add - also check for single register here and inhibit
@@ -4073,7 +4078,8 @@ public class SystemVerilogDecodeModule extends SystemVerilogModule {
 			}
 			// internal reg so init enables and data
 			else {
-				writeStmt(indentLevel, elem.getFullSignalName(DefSignalType.D2L_DATA) + " = pio_dec_write_data_d1 " + SystemVerilogSignal.genRefArrayString(0, elem.getMaxRegWidth()) +";");  // regardless of transaction size assign based on regsize
+				// MYTOYS: writeStmt(indentLevel, elem.getFullSignalName(DefSignalType.D2L_DATA) + " = pio_dec_write_data_d1 " + SystemVerilogSignal.genRefArrayString(0, elem.getMaxRegWidth()) +";");  // regardless of transaction size assign based on regsize
+				writeStmt(indentLevel, elem.getFullSignalName(DefSignalType.D2L_DATA) + " = pio_dec_write_data " + SystemVerilogSignal.genRefArrayString(0, elem.getMaxRegWidth()) +";");  // regardless of transaction size assign based on regsize
 				writeStmt(indentLevel, elem.getFullSignalName(DefSignalType.D2L_WE) + " = 1'b0;");  // we defaults to 0
 				writeStmt(indentLevel, elem.getFullSignalName(DefSignalType.D2L_RE) + " = 1'b0;");  // re defaults to 0
 				// construct full width enable vector for internals
@@ -4083,7 +4089,8 @@ public class SystemVerilogDecodeModule extends SystemVerilogModule {
 
 		// now build case statement by iterating through reg list
 		writeStmt(indentLevel, "");
-		if (mapHasMultipleAddresses()) writeStmt(indentLevel, "casez(pio_dec_address_d1)");   // begin case statement
+		// MYTOYS:if (mapHasMultipleAddresses()) writeStmt(indentLevel, "casez(pio_dec_address_d1)");   // begin case statement
+		if (mapHasMultipleAddresses()) writeStmt(indentLevel, "case(pio_dec_address)");   // begin case statement
 		it = decoderList.iterator();
 		while (it.hasNext()) {
 			AddressableInstanceProperties elem = it.next();
@@ -4162,8 +4169,10 @@ public class SystemVerilogDecodeModule extends SystemVerilogModule {
 					writeStmt(indentLevel, elem.getFullSignalName(DefSignalType.D2L_RE) + " = pio_read_active & ~" + pioInterfaceAckName + ";");   					
 				}
 				else {
-					writeStmt(indentLevel, elem.getFullSignalName(DefSignalType.D2L_WE) + " = pio_write_active & ~" + pioInterfaceAckName + ";");  
-					writeStmt(indentLevel, elem.getFullSignalName(DefSignalType.D2L_RE) + " = pio_read_active & ~" + pioInterfaceAckName + ";");   					
+					// MYTOYS: writeStmt(indentLevel, elem.getFullSignalName(DefSignalType.D2L_WE) + " = pio_write_active & ~" + pioInterfaceAckName + ";");
+					// MYTOYS: writeStmt(indentLevel, elem.getFullSignalName(DefSignalType.D2L_RE) + " = pio_read_active & ~" + pioInterfaceAckName + ";");
+					writeStmt(indentLevel, elem.getFullSignalName(DefSignalType.D2L_WE) + " = pio_dec_write;");
+					writeStmt(indentLevel, elem.getFullSignalName(DefSignalType.D2L_RE) + " = pio_dec_read;");
 				}
 				// generate internal ack based on sw r/w settings of register
 				if (!elem.isSwWriteable()) 
@@ -4173,7 +4182,8 @@ public class SystemVerilogDecodeModule extends SystemVerilogModule {
 				else 
 				   writeStmt(indentLevel, "pio_internal_ack =  pio_read_active | pio_write_active;"); 
 				
-				writeStmt(indentLevel--, "dec_pio_read_data_next " + elem.getMaxRegArrayString() + " = " + elem.getFullSignalName(DefSignalType.L2D_DATA) + ";");  
+				// MYTOYS: writeStmt(indentLevel--, "dec_pio_read_data_next " + elem.getMaxRegArrayString() + " = " + elem.getFullSignalName(DefSignalType.L2D_DATA) + ";");  
+				writeStmt(indentLevel--, "dec_pio_read_data_next " + elem.getMaxRegArrayString() + " = " + "{32{" +  elem.getFullSignalName(DefSignalType.D2L_RE) + "}} & "  + elem.getFullSignalName(DefSignalType.L2D_DATA) + ";");
 				writeStmt(indentLevel--, "end");  				
 			}
 		}	

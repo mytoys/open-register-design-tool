@@ -574,7 +574,8 @@ public class SystemVerilogBuilder extends OutputBuilder {
 		// init logic 
 		logic.setName(getModuleName() + "_jrdl_logic");		
 		// init top
-		top.setName(getModuleName() + "_pio");  // set name
+		// MYTOYS: top.setName(getModuleName() + "_pio");  // set name
+		top.setName(getModuleName() + "_regfile");  // set name
 		if (addBaseAddressParameter()) setAddBaseAddrParameter(top);
 		// add decode and logic modules
 		top.addInstance(decoder, "pio_decode");

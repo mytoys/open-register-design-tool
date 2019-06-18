@@ -13,41 +13,48 @@ field f_RO { hw = w; sw = r ; desc = "TBD"; };
 // and inside regfile, reg address is continuous
 //
 regfile regs_ABC  {
-	reg {
-		f_RW field_31[31:31] = 1'd1;
+    reg {
+        f_RW field_name[31:0] = 8'd0;
+        field_name->desc = "enable";
+    } reg_0_name;
+    reg_0_name->desc = "register description text for ENABLE";
+
+    reg {
+        f_RW field_name[7:0] = 8'd0;
+    } reg_1_name @0x20;
+
+    reg {
+        f_RW field_31[31:31] = 1'd1;
         field_31->desc = "field description text for field_31";
 
-		f_RW field_26[26:16] = 11'd16;
+        f_RW field_26[26:16] = 11'd16;
         field_26->desc = "field description text for field_26";
 
-		f_RW field_10_0[10:0] = 11'd128;
+        f_RW field_10_0[10:0] = 11'd128;
         field_10_0->desc = "field description text for field_10_0";
 
-	} CTRL;
+    } CTRL;
     CTRL->desc = "register description text for CTRL";
 
-	reg {
-		f_RW Xenable[0:0] = 1'd0;
-        Xenable->desc = "enable";
-	} ENABLE;
-    ENABLE->desc = "register description text for ENABLE";
 };
 
 // addrmap is the boundry of RTL
 // output verilog will be
-//  abc_pio
-//    +abc_logic
-//    +abc_decode
-
+//  $(addrmap)_pio
+//    +$(addrmap)_logic
+//    +$(addrmap)_decode
 addrmap  {
-	regs_ABC  ABC  @0x1000;
+    regs_ABC  ABC    @0x000;
 
-	reg {
-		f_RW status[15:0] = 1'd0;
-	} STATUS;
+/*
+    regs_ABC  ABC_2  @0x1000;
 
-	regs_ABC  ABC_2  @0x2000;
+    reg {
+        f_RW status[15:0] = 1'd0;
+    } STATUS;
 
-} abc;    
+    regs_ABC  ABC_3  @0x2000;
+*/
 
+} abc;
 

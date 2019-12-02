@@ -1565,6 +1565,7 @@ public class UVMRegsBuilder extends OutputBuilder {
 		if (!isMemWrapper && isBaseBlock)
 			outputList.add(new OutputLine(indentLvl, "this.add_callbacks();"));
 		
+    outputList.add(new OutputLine(indentLvl, "lock_model();"));
 		outputList.add(new OutputLine(--indentLvl, "endfunction: build"));
 	}
 	
